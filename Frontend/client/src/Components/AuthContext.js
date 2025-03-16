@@ -7,6 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [token, setToken] = useState(null);
   const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Load authentication state and user data from localStorage on mount
   useEffect(() => {
@@ -17,6 +18,7 @@ export const AuthProvider = ({ children }) => {
       setUser(JSON.parse(storedUser));  // Parse user data from localStorage
       setIsAuthenticated(true);
     }
+    setIsLoading(false);
   }, []);
 
   const login = (authToken, userData) => {
@@ -35,8 +37,13 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
   };
 
+  const updateUser = (userData) => {
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
+  };
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, token, user, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, token, user, login, logout, isLoading, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

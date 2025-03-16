@@ -12,18 +12,19 @@ const LoginPage = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError('');
 
     try {
-      const response = await axios.post('http://localhost:5000/login', { email, password });
+      const response = await axios.post(`https://librarymanagementsystembackend.onrender.com/api/users/login`, {
+        email,
+        password
+      });
 
-      // Save token and user data in context
       const { token, user } = response.data;
-      login(token, user); // Pass both token and user to login
-
-      // Redirect to books page
+      login(token, user);
       navigate('/books');
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed. Please try again.');
+      setError(err.response?.data?.message || 'Login failed');
     }
   };
 

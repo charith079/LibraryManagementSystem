@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const SignupPage = () => {
   const [username, setUsername] = useState('');
@@ -11,49 +12,21 @@ const SignupPage = () => {
 
   const handleSignup = async (e) => {
     e.preventDefault();
-
-    // Basic validation
-    if (!username || !email || !password) {
-      setError('All fields are required');
-      return;
-    }
+    setError('');
 
     try {
-      // Make API call to register the user
-      const response = await fetch('http://localhost:5000/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username,
-          email,
-          password,
-        }),
+      const response = await axios.post(`https://librarymanagementsystembackend.onrender.com/api/users/register`, {
+        username,
+        email,
+        password,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        // Successful signup
+      if (response.status === 201) {
         setSuccess(true);
-        setError('');
-        setUsername('');
-        setEmail('');
-        setPassword('');
-
-        // After successful signup, redirect to login page
-        setTimeout(() => {
-          navigate('/login');
-        }, 2000);
-      } else {
-        // Handle errors from the backend
-        setError(data.message || 'An error occurred');
+        setTimeout(() => navigate('/login'), 2000);
       }
-    } catch (error) {
-      // Catch any network or server errors
-      console.error(error);
-      setError('Server error, please try again later');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Registration failed');
     }
   };
 
